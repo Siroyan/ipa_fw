@@ -35,7 +35,7 @@ void setup() {
 }
 
 void loop() {
-  if (micros() - prev_polling_time_micro > 10) {
+  if (micros() - prev_polling_time_micro > 1) {
     prev_polling_time_micro = micros();
     prv_src_pulse_flag = now_src_pulse_flag;
     now_src_pulse_flag = digitalRead(SRC_PULSE_PIN);
