@@ -15,7 +15,8 @@ void init_lcd(void);
 void send_command(byte);
 void send_char(byte);
 
-float coeff = 0.f;
+uint16_t val = 0;
+float coeff = 1.f;
 
 bool prv_src_pulse_flag = false;
 bool now_src_pulse_flag = false;
@@ -31,12 +32,16 @@ void setup() {
   pinMode(ADJ_PULSE_PIN, OUTPUT);
   pinMode(SRC_PULSE_PIN, INPUT);
   digitalWrite(ADJ_PULSE_PIN, LOW);
-  init_lcd();
+  // init_lcd();
 }
 
 void loop() {
   if (micros() - prev_polling_time_micro > 1) {
     prev_polling_time_micro = micros();
+    // Update coeff
+    val = analogRead(3);
+    coeff = (val + 252.f) / 505.f;
+    // Pulse process
     prv_src_pulse_flag = now_src_pulse_flag;
     now_src_pulse_flag = digitalRead(SRC_PULSE_PIN);
     if (now_src_pulse_flag != prv_src_pulse_flag) {
@@ -55,9 +60,6 @@ void loop() {
   }
   if (micros() - prev_display_time_micro > 3000000) {
     prev_display_time_micro = micros();
-    uint16_t val = 0;
-    val = analogRead(3);
-    coeff = (val + 252.f) / 505.f;
     send_command(B10000000 + 4);
     display_digits3(val);
     send_command(B11000000 + 0);
